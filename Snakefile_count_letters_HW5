@@ -1,0 +1,20 @@
+import glob
+import re
+
+FILES = {re.sub(r'.*input/', '', file) for file in glob.glob('input/*')}
+FILES = {file for file in FILES if not file.startswith('.')}
+
+rule all:
+    input: expand("output/{file}", file=FILES)
+
+rule read_files:
+    input: "input/{file}"
+    output: "output/{file}"
+    run:
+
+        with open(f'{input}', 'r') as in_file, open(f'{output}', 'w') as out_file:
+            line = sorted(in_file.readline().strip().lower())
+            counter = {char: line.count(char) for char in line}
+            for k, v in counter.items():
+                out_file.write(f'{k}: {v}\n')
+
